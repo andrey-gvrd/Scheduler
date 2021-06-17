@@ -44,13 +44,18 @@ void Scheduler::add_to_ready(Thread& thread)
 void Scheduler::pause_currently_executing()
 {
 	m_controller.pause(m_currently_executing->thread);
+
+	m_currently_executing->executing_for = 0;
+	m_ready.pop_front();
+	add_to_ready(*m_currently_executing);
 }
 
-void Scheduler::set_and_start_currently_executing(Thread& thread)
+void Scheduler::update_and_start_currently_executing()
 {
-	cout << "Scheduler::set_and_start_currently_executing(\"" << thread.name << "\")" << endl;
+	Thread* thread = *m_ready.begin();
+	cout << "Scheduler::set_and_start_currently_executing(\"" << thread->name << "\")" << endl;
 
-	m_currently_executing = &thread;
+	m_currently_executing = thread;
 	m_controller.resume(m_currently_executing->thread);
 }
 
@@ -71,7 +76,7 @@ void Scheduler::run()
 
 		// Nothing is executing -- start executing the highest priority thread
 		if (!m_currently_executing) {
-			set_and_start_currently_executing(**m_ready.begin());
+			update_and_start_currently_executing();
 			continue;
 		}
 
@@ -79,16 +84,7 @@ void Scheduler::run()
 		m_currently_executing->executing_for += 1;
 		if (m_currently_executing->executing_for >= m_time_slice_period) {
 			pause_currently_executing();
-
-			Thread* thread = *m_ready.begin();
-
-			assert(thread == m_currently_executing);
-
-			thread->executing_for = 0;
-			m_ready.pop_front();
-			add_to_ready(*thread);
-
-			set_and_start_currently_executing(**m_ready.begin());
+			update_and_start_currently_executing();
 			continue;
 		}
 	}

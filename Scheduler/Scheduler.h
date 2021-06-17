@@ -57,5 +57,5 @@ public:
 private:
 	void add_to_ready(Thread&);
 	void pause_currently_executing();
-	void set_and_start_currently_executing(Thread& thread);
+	void update_and_start_currently_executing();
 };
