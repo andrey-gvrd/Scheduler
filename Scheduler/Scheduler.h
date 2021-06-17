@@ -33,20 +33,21 @@
 
 /*
 TODO
-	[x] Add windwows threads as the base
+	[x] Add windows threads as the base
+	[ ] Separate windows threads using an interface
 */
 
 #include <list>
 #include <set>
 #include <windows.h>
+#include "NativeThreadController.h"
 #include "Thread.h"
 
 class Scheduler {
 	std::list<Thread*> m_ready{ };
 	std::set<Thread*> m_blocked{ };
 	Thread* m_currently_executing{ nullptr };
-
-	HANDLE idle_thread;
+	NativeThreadController m_controller;
 
 	unsigned m_time_slice_period = 4;
 	unsigned m_tick_interval_ms = 1000;
@@ -56,6 +57,6 @@ public:
 	void run();
 private:
 	void add_to_ready(Thread&);
-	void stop_currently_executing();
+	void pause_currently_executing();
 	void set_and_start_currently_executing(Thread& thread);
 };

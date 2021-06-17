@@ -2,6 +2,7 @@
 #include <string>
 #include <windows.h>
 #include "Scheduler.h"
+#include "Thread.h"
 
 using std::cout;
 using std::endl;

@@ -5,24 +5,9 @@
 using std::cout;
 using std::endl;
 
-DWORD WINAPI idle_thread_impl(LPVOID lpParam) {
-	while (true) {
-		//cout << "idle_thread_impl()" << endl;
-	}
-}
-
 Scheduler::Scheduler()
+	: m_controller(NativeThreadController())
 {
-	idle_thread = CreateThread(nullptr, 0, idle_thread_impl, nullptr, CREATE_SUSPENDED, nullptr);
-	if (!idle_thread) {
-		cout << "CreateThread(\"idle\") has failed." << endl;
-		while (true);
-	}
-
-	if (!SetThreadPriority(idle_thread, THREAD_PRIORITY_NORMAL)) {
-		cout << "SetThreadPriority(\"idle\") has failed." << endl;
-		while (true);
-	}
 }
 
 void Scheduler::add_thread(Thread& thread)
@@ -55,9 +40,9 @@ void Scheduler::add_to_ready(Thread& thread)
 	m_ready.push_back(&thread);
 }
 
-void Scheduler::stop_currently_executing()
+void Scheduler::pause_currently_executing()
 {
-	SetThreadPriority(m_currently_executing->win_handle, THREAD_PRIORITY_NORMAL);
+	m_controller.pause(m_currently_executing->thread);
 }
 
 void Scheduler::set_and_start_currently_executing(Thread& thread)
@@ -65,22 +50,12 @@ void Scheduler::set_and_start_currently_executing(Thread& thread)
 	cout << "Scheduler::set_and_start_currently_executing(\"" << thread.name << "\")" << endl;
 
 	m_currently_executing = &thread;
-	SetThreadPriority(m_currently_executing->win_handle, THREAD_PRIORITY_ABOVE_NORMAL);
+	m_controller.resume(m_currently_executing->thread);
 }
 
 void Scheduler::run()
 {
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
-
-	cout << "Resuming the idle and all the ready and blocked threads." << endl;
-
-	ResumeThread(idle_thread);
-	for (auto& thread : m_ready) {
-		ResumeThread(thread->win_handle);
-	}
-	for (auto& thread : m_blocked) {
-		ResumeThread(thread->win_handle);
-	}
 
 	while (true) {
 		Sleep(m_tick_interval_ms);
@@ -102,7 +77,7 @@ void Scheduler::run()
 		// Currently executing thread has ran over it's time slice allowment, move it to the back of the queue and start executing a new thread
 		m_currently_executing->executing_for += 1;
 		if (m_currently_executing->executing_for >= m_time_slice_period) {
-			stop_currently_executing();
+			pause_currently_executing();
 
 			Thread* thread = *m_ready.begin();
 

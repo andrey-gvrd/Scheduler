@@ -2,7 +2,7 @@
 
 #include <string>
 #include <functional>
-#include <windows.h>
+#include "NativeThread.h"
 
 struct Thread {
 	enum class State {
@@ -18,8 +18,7 @@ struct Thread {
 	Priority priority;
 	State state;
 	std::string name;
-	std::function<void()> function;
-	HANDLE win_handle;
+	NativeThread thread;
 
 	unsigned executing_for{ 0 };
 
