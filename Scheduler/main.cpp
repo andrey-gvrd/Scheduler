@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <windows.h>
 #include "Scheduler.h"
 #include "Thread.h"
 
@@ -31,15 +30,8 @@ void c_handler(void)
 	}
 }
 
-bool windows_threading_init();
-
 int main()
 {
-	if (!windows_threading_init()) {
-		cout << "windows_threading_init() fail" << endl;
-		return -1;
-	}
-
 	Thread a("a", a_handler, Thread::Priority::Medium);
 	Thread b("b", b_handler, Thread::Priority::Medium);
 	Thread c("c", c_handler, Thread::Priority::Low);
@@ -50,38 +42,4 @@ int main()
 	scheduler.add_thread(c);
 
 	scheduler.run();
-}
-
-// Force single core execution to use thread priorities to control thread execution
-bool windows_threading_init()
-{
-	DWORD dwProcessAffinityMask = 1u;
-	BOOL res = SetProcessAffinityMask(
-		GetCurrentProcess(),
-		dwProcessAffinityMask
-	);
-
-	if (!res) {
-		cout << "SetProcessAffinityMask() failed" << endl;
-		return false;
-	}
-
-	DWORD lpProcessAffinityMask;
-	DWORD lpSystemAffinityMask;
-	res = GetProcessAffinityMask(
-		GetCurrentProcess(),
-		&lpProcessAffinityMask,
-		&lpSystemAffinityMask
-	);
-
-	if (res) {
-		//cout << "ProcessAffinityMask: " << lpProcessAffinityMask << endl;
-		//cout << "lpSystemAffinityMask: " << lpSystemAffinityMask << endl;
-	}
-	else {
-		cout << "GetProcessAffinityMask() failed" << endl;
-		return false;
-	}
-
-	return true;
 }

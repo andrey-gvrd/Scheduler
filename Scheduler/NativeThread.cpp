@@ -1,4 +1,8 @@
 #include "NativeThread.h"
+#include <iostream>
+
+using std::cout;
+using std::endl;
 
 void idle_thread()
 {
@@ -8,6 +12,34 @@ void idle_thread()
 NativeThreadController::NativeThreadController()
 	: m_idle(NativeThread(static_cast<std::function<void()>>(idle_thread), IDLE_THREAD_PRIORITY))
 {
+	// Force single core execution to use thread priorities to control thread execution
+	DWORD dwProcessAffinityMask = 1u;
+	BOOL res = SetProcessAffinityMask(
+		GetCurrentProcess(),
+		dwProcessAffinityMask
+	);
+
+	if (!res) {
+		cout << "SetProcessAffinityMask() failed" << endl;
+		while (true);
+	}
+
+	DWORD lpProcessAffinityMask;
+	DWORD lpSystemAffinityMask;
+	res = GetProcessAffinityMask(
+		GetCurrentProcess(),
+		&lpProcessAffinityMask,
+		&lpSystemAffinityMask
+	);
+
+	if (res) {
+		//cout << "ProcessAffinityMask: " << lpProcessAffinityMask << endl;
+		//cout << "lpSystemAffinityMask: " << lpSystemAffinityMask << endl;
+	}
+	else {
+		cout << "GetProcessAffinityMask() failed" << endl;
+		while (true);
+	}
 }
 
 void NativeThreadController::resume(NativeThread& thread)

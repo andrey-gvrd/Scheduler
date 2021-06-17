@@ -53,7 +53,7 @@ void Scheduler::pause_currently_executing()
 void Scheduler::update_and_start_currently_executing()
 {
 	Thread* thread = *m_ready.begin();
-	cout << "Scheduler::set_and_start_currently_executing(\"" << thread->name << "\")" << endl;
+	cout << "Scheduler::update_and_start_currently_executing(\"" << thread->name << "\")" << endl;
 
 	m_currently_executing = thread;
 	m_controller.resume(m_currently_executing->thread);
