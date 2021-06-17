@@ -1,8 +1,24 @@
 #include "NativeThread.h"
-#include <iostream>
 
-using std::cout;
-using std::endl;
+void idle_thread()
+{
+	while (true);
+}
+
+NativeThreadController::NativeThreadController()
+	: m_idle(NativeThread(static_cast<std::function<void()>>(idle_thread), IDLE_THREAD_PRIORITY))
+{
+}
+
+void NativeThreadController::resume(NativeThread& thread)
+{
+	SetThreadPriority(thread.m_handle, THREAD_RUNNING_PRIORITY);
+}
+
+void NativeThreadController::pause(NativeThread& thread)
+{
+	SetThreadPriority(thread.m_handle, THREAD_PAUSED_PRIORITY);
+}
 
 static DWORD WINAPI function_impl(LPVOID lpParam)
 {

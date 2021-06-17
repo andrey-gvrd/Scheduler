@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include "Scheduler.h"
+#include <windows.h>
 
 using std::cout;
 using std::endl;
@@ -55,7 +56,7 @@ void Scheduler::set_and_start_currently_executing(Thread& thread)
 
 void Scheduler::run()
 {
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+	SetThreadPriority(GetCurrentThread(), SCHEDULER_PRIORITY);	// TODO: Use NativeThread to have run() in a separate thread
 
 	while (true) {
 		Sleep(m_tick_interval_ms);

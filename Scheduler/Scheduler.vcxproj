@@ -154,13 +154,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NativeThread.cpp" />
-    <ClCompile Include="NativeThreadController.cpp" />
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="Thread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NativeThread.h" />
-    <ClInclude Include="NativeThreadController.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Thread.h" />
   </ItemGroup>

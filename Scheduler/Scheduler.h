@@ -39,8 +39,7 @@ TODO
 
 #include <list>
 #include <set>
-#include <windows.h>
-#include "NativeThreadController.h"
+#include "NativeThread.h"
 #include "Thread.h"
 
 class Scheduler {
