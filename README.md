@@ -12,9 +12,9 @@ The dividing line in this project is between scheduler's implementation of threa
 
 ### Implementation
 
-```html
-<img align="left" height="500" width="auto" src=".\images\scheduler-diagram.png">
-```
+<div style="overflow: hidden; width: 100%;">
+    <img float="left" height="450" width="auto" src="images/scheduler-diagram.png" />
+</div>
 
 ### Threads
 
