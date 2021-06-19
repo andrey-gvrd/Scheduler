@@ -10,6 +10,12 @@ The dividing line in this project is between scheduler's implementation of threa
 - Pre-emption
 - Time-slicing
 
+### Implementation
+
+```html
+<img align="left" height="500" width="auto" src=".\images\scheduler-diagram.png">
+```
+
 ### Threads
 
 Scheduler threads (`Thread`) can have 3 priorities:

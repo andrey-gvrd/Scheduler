@@ -11,8 +11,8 @@ class Scheduler {
 	Thread* m_currently_executing{ nullptr };
 	NativeThreadController m_controller;
 
-	unsigned m_time_slice_period = 4;	// TODO: Make passable
-	unsigned m_tick_interval_ms = 1000;	// TODO: Make passable
+	Thread::Ticks m_time_slice_period = 4;	// TODO: Make passable
+	Thread::MilliSeconds m_tick_interval_ms = 1000;	// TODO: Make passable
 public:
 	Scheduler();
 	void add_thread(Thread&);
