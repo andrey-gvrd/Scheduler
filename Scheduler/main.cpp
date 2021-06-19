@@ -6,40 +6,37 @@
 using std::cout;
 using std::endl;
 
-void a_handler(void)
-{
-	while (true) {
-		//cout << "a running" << endl;
-		//Sleep(200);
+class CustomThreadA : public Thread {
+	using Thread::Thread;
+public:
+	void handler() override {
+		while (true) {
+			//sleep_ms(2);
+		}
 	}
-}
+};
 
-void b_handler(void)
-{
-	while (true) {
-		//cout << "b running" << endl;
-		//Sleep(200);
+class CustomThreadB : public Thread {
+	using Thread::Thread;
+public:
+	void handler() override {
+		while (true) {
+			//sleep_ms(2);
+		}
 	}
-}
-
-void c_handler(void)
-{
-	while (true) {
-		//cout << "c running" << endl;
-		//Sleep(200);
-	}
-}
+};
 
 int main()
 {
-	Thread a("a", a_handler, Thread::Priority::Medium);
-	Thread b("b", b_handler, Thread::Priority::Medium);
-	Thread c("c", c_handler, Thread::Priority::Low);
-
 	Scheduler scheduler;
-	scheduler.add_thread(a);
-	scheduler.add_thread(b);
-	scheduler.add_thread(c);
+	CustomThreadA thread_a_1("thread_a_1");
+	CustomThreadA thread_a_2("thread_a_2");
+	CustomThreadB thread_b_1("thread_b_1");
+	CustomThreadB thread_b_2("thread_b_2", Thread::Priority::Low);
+	scheduler.add_thread(thread_a_1);
+	scheduler.add_thread(thread_a_2);
+	scheduler.add_thread(thread_b_1);
+	scheduler.add_thread(thread_b_2);
 
 	scheduler.run();
 }

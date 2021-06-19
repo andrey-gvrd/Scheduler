@@ -54,13 +54,14 @@ void NativeThreadController::pause(NativeThread& thread)
 
 static DWORD WINAPI function_impl(LPVOID lpParam)
 {
-	static_cast<NativeThread*>(lpParam)->function();
+	auto& function = *static_cast<std::function<void()>*>(lpParam);
+	function();
 	return 0;
 }
 
-NativeThread::NativeThread(std::function<void()> _function, int priority)
+NativeThread::NativeThread(std::function<void()> _function, int _priority)
 	: function(_function)
+	, m_handle(CreateThread(nullptr, 0, function_impl, static_cast<LPVOID>(&function), 0, nullptr))
 {
-	m_handle = CreateThread(nullptr, 0, function_impl, this, 0, nullptr);
-	SetThreadPriority(m_handle, priority);
+	SetThreadPriority(m_handle, _priority);
 }

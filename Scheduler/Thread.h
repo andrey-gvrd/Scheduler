@@ -4,7 +4,10 @@
 #include <functional>
 #include "NativeThread.h"
 
-struct Thread {
+class Thread {
+	friend class Scheduler;
+
+public:
 	enum class State {
 		Ready,
 		Blocked
@@ -15,14 +18,17 @@ struct Thread {
 		High = 2
 	};
 
+	Thread(std::string _name = "", Priority _priority = Priority::Medium);
+	virtual void handler() = 0;
+	void sleep_ms(unsigned);
+
+private:
 	Priority priority;
 	State state;
+	NativeThread native_thread;
 	std::string name;
-	NativeThread thread;
 
 	unsigned executing_for{ 0 };
-
-	Thread(std::string, std::function<void()>, Priority);
 
 	bool operator<(const Thread& rhs) { return static_cast<int>(priority) > static_cast<int>(rhs.priority); }
 	bool operator>(const Thread& rhs) { return rhs.priority < priority; }

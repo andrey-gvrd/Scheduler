@@ -43,7 +43,7 @@ void Scheduler::add_to_ready(Thread& thread)
 
 void Scheduler::pause_currently_executing()
 {
-	m_controller.pause(m_currently_executing->thread);
+	m_controller.pause(m_currently_executing->native_thread);
 
 	m_currently_executing->executing_for = 0;
 	m_ready.pop_front();
@@ -56,7 +56,7 @@ void Scheduler::update_and_start_currently_executing()
 	cout << "Scheduler::update_and_start_currently_executing(\"" << thread->name << "\")" << endl;
 
 	m_currently_executing = thread;
-	m_controller.resume(m_currently_executing->thread);
+	m_controller.resume(m_currently_executing->native_thread);
 }
 
 void Scheduler::run()

@@ -4,10 +4,21 @@
 using std::cout;
 using std::endl;
 
-Thread::Thread(std::string _name, std::function<void()> _function, Thread::Priority _priority)
+static void handler_impl(void* context)
+{
+	auto object = static_cast<Thread*>(context);
+	object->handler();
+}
+
+Thread::Thread(std::string _name, Priority _priority)
 	: name(_name)
 	, priority(_priority)
 	, state(Thread::State::Ready)
-	, thread(NativeThread(_function))
+	, native_thread(NativeThread(std::bind(handler_impl, this)))
 {
+}
+
+void Thread::sleep_ms(unsigned ms)
+{
+
 }
