@@ -10,9 +10,10 @@ This scheduler is a written in C++ as a design exercise.
 
 ### Implementation
 
-<div style="overflow: hidden; width: 100%;">
+<div style="overflow: hidden; height: 100%;">
     <img float="left" height="450" width="auto" src="images/scheduler-diagram.png" />
 </div>
+
 
 ### UserThread / Threads
 
