@@ -17,19 +17,23 @@ public:
 		Medium = 1,
 		High = 2
 	};
+	using Ticks = unsigned;
+	using MilliSeconds = unsigned;
 
 	Thread(std::string _name = "", Priority _priority = Priority::Medium);
 	virtual void handler() = 0;
-	void sleep_ms(unsigned);
+	void sleep_ms(MilliSeconds);
+	void sleep_ticks(Ticks);
 
 private:
-	Priority priority;
-	State state;
-	NativeThread native_thread;
-	std::string name;
+	Priority m_priority;
+	State m_state;
+	NativeThread m_native_thread;
+	std::string m_name;
 
-	unsigned executing_for{ 0 };
+	Ticks m_executing_for{ 0 };
+	Ticks m_sleep_for{ 0 };
 
-	bool operator<(const Thread& rhs) { return static_cast<int>(priority) > static_cast<int>(rhs.priority); }
-	bool operator>(const Thread& rhs) { return rhs.priority < priority; }
+	bool operator<(const Thread& rhs) { return static_cast<int>(m_priority) > static_cast<int>(rhs.m_priority); }
+	bool operator>(const Thread& rhs) { return rhs.m_priority < m_priority; }
 };

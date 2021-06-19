@@ -11,7 +11,7 @@ class CustomThreadA : public Thread {
 public:
 	void handler() override {
 		while (true) {
-			//sleep_ms(2);
+			sleep_ticks(2);
 		}
 	}
 };
@@ -21,7 +21,6 @@ class CustomThreadB : public Thread {
 public:
 	void handler() override {
 		while (true) {
-			//sleep_ms(2);
 		}
 	}
 };

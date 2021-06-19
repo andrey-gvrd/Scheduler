@@ -13,7 +13,7 @@ class NativeThread
 	HANDLE m_handle;
 public:
 	std::function<void()> function;
-	NativeThread(std::function<void()>, int priority = THREAD_PAUSED_PRIORITY);
+	NativeThread(std::function<void()>, int m_priority = THREAD_PAUSED_PRIORITY);
 
 	friend class NativeThreadController;
 };

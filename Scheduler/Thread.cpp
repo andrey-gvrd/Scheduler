@@ -11,14 +11,19 @@ static void handler_impl(void* context)
 }
 
 Thread::Thread(std::string _name, Priority _priority)
-	: name(_name)
-	, priority(_priority)
-	, state(Thread::State::Ready)
-	, native_thread(NativeThread(std::bind(handler_impl, this)))
+	: m_name(_name)
+	, m_priority(_priority)
+	, m_state(Thread::State::Ready)
+	, m_native_thread(NativeThread(std::bind(handler_impl, this)))
 {
 }
 
-void Thread::sleep_ms(unsigned ms)
+void Thread::sleep_ms(MilliSeconds ms)
 {
 
+}
+
+void Thread::sleep_ticks(Ticks ticks)
+{
+	m_sleep_for = ticks;
 }
