@@ -9,7 +9,7 @@ class Scheduler {
 	std::list<Thread*> m_ready{ };
 	std::set<Thread*> m_blocked{ };
 	Thread* m_currently_executing{ nullptr };
-	NativeThreadController m_controller;
+	NativeThread m_idle;
 
 	Thread::Ticks m_time_slice_period = 4;	// TODO: Make passable
 	Thread::MilliSeconds m_tick_interval_ms = 1000;	// TODO: Make passable

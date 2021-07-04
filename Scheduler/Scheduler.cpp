@@ -6,9 +6,46 @@
 using std::cout;
 using std::endl;
 
-Scheduler::Scheduler()
-	: m_controller(NativeThreadController())
+void idle_thread()
 {
+	while (true) {
+		//cout << "idle" << endl;
+	}
+}
+
+Scheduler::Scheduler()
+	: m_idle(NativeThread(static_cast<std::function<void()>>(idle_thread), IDLE_THREAD_PRIORITY, "idle_thread"))
+{
+	// Force single core execution to use thread priorities to control thread execution
+	DWORD dwProcessAffinityMask = 1u;
+	BOOL res = SetProcessAffinityMask(
+		GetCurrentProcess(),
+		dwProcessAffinityMask
+	);
+
+	if (!res) {
+		cout << "SetProcessAffinityMask() failed" << endl;
+		while (true);
+	}
+
+	DWORD lpProcessAffinityMask;
+	DWORD lpSystemAffinityMask;
+	res = GetProcessAffinityMask(
+		GetCurrentProcess(),
+		&lpProcessAffinityMask,
+		&lpSystemAffinityMask
+	);
+
+	if (res) {
+		//cout << "ProcessAffinityMask: " << lpProcessAffinityMask << endl;
+		//cout << "lpSystemAffinityMask: " << lpSystemAffinityMask << endl;
+	}
+	else {
+		cout << "GetProcessAffinityMask() failed" << endl;
+		while (true);
+	}
+
+	SetThreadPriority(GetCurrentThread(), SCHEDULER_PRIORITY);	// TODO: Use NativeThread to have run() in a separate thread
 }
 
 void Scheduler::add_thread(Thread& thread)
@@ -38,7 +75,7 @@ void Scheduler::add_to_ready(Thread& thread)
 
 void Scheduler::pause_currently_executing()
 {
-	m_controller.pause(m_currently_executing->m_native_thread);
+	m_currently_executing->m_native_thread.pause();
 
 	m_currently_executing->m_executing_for = 0;
 	m_ready.pop_front();
@@ -51,13 +88,11 @@ void Scheduler::update_and_start_currently_executing()
 	cout << "Scheduler::update_and_start_currently_executing(\"" << thread->m_name << "\")" << endl;
 
 	m_currently_executing = thread;
-	m_controller.resume(m_currently_executing->m_native_thread);
+	m_currently_executing->m_native_thread.resume();
 }
 
 void Scheduler::run()
 {
-	SetThreadPriority(GetCurrentThread(), SCHEDULER_PRIORITY);	// TODO: Use NativeThread to have run() in a separate thread
-
 	while (true) {
 		Sleep(m_tick_interval_ms);
 
@@ -86,7 +121,7 @@ void Scheduler::run()
 				if (&thread == m_currently_executing) {
 					m_currently_executing = nullptr;
 				}
-				m_controller.pause(thread.m_native_thread);
+				thread.m_native_thread.pause();
 				thread.m_executing_for = 0;
 
 				m_blocked.insert(&thread);

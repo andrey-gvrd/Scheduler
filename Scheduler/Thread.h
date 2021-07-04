@@ -25,15 +25,19 @@ public:
 	void sleep_ms(MilliSeconds);
 	void sleep_ticks(Ticks);
 
+protected:
+	std::string m_name;
+
 private:
 	Priority m_priority;
 	State m_state;
 	NativeThread m_native_thread;
-	std::string m_name;
 
 	Ticks m_executing_for{ 0 };
 	Ticks m_sleep_for{ 0 };
 
 	bool operator<(const Thread& rhs) { return static_cast<int>(m_priority) > static_cast<int>(rhs.m_priority); }
 	bool operator>(const Thread& rhs) { return rhs.m_priority < m_priority; }
+
+	void yield();
 };

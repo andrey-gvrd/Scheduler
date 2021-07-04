@@ -4,52 +4,14 @@
 using std::cout;
 using std::endl;
 
-void idle_thread()
+void NativeThread::resume()
 {
-	while (true);
+	SetThreadPriority(m_handle, THREAD_RUNNING_PRIORITY);
 }
 
-NativeThreadController::NativeThreadController()
-	: m_idle(NativeThread(static_cast<std::function<void()>>(idle_thread), IDLE_THREAD_PRIORITY))
+void NativeThread::pause()
 {
-	// Force single core execution to use thread priorities to control thread execution
-	DWORD dwProcessAffinityMask = 1u;
-	BOOL res = SetProcessAffinityMask(
-		GetCurrentProcess(),
-		dwProcessAffinityMask
-	);
-
-	if (!res) {
-		cout << "SetProcessAffinityMask() failed" << endl;
-		while (true);
-	}
-
-	DWORD lpProcessAffinityMask;
-	DWORD lpSystemAffinityMask;
-	res = GetProcessAffinityMask(
-		GetCurrentProcess(),
-		&lpProcessAffinityMask,
-		&lpSystemAffinityMask
-	);
-
-	if (res) {
-		//cout << "ProcessAffinityMask: " << lpProcessAffinityMask << endl;
-		//cout << "lpSystemAffinityMask: " << lpSystemAffinityMask << endl;
-	}
-	else {
-		cout << "GetProcessAffinityMask() failed" << endl;
-		while (true);
-	}
-}
-
-void NativeThreadController::resume(NativeThread& thread)
-{
-	SetThreadPriority(thread.m_handle, THREAD_RUNNING_PRIORITY);
-}
-
-void NativeThreadController::pause(NativeThread& thread)
-{
-	SetThreadPriority(thread.m_handle, THREAD_PAUSED_PRIORITY);
+	SetThreadPriority(m_handle, THREAD_PAUSED_PRIORITY);
 }
 
 static DWORD WINAPI function_impl(LPVOID lpParam)
@@ -59,9 +21,15 @@ static DWORD WINAPI function_impl(LPVOID lpParam)
 	return 0;
 }
 
-NativeThread::NativeThread(std::function<void()> _function, int _priority)
+NativeThread::NativeThread(std::function<void()> _function, int _priority, std::string _name)
 	: function(_function)
-	, m_handle(CreateThread(nullptr, 0, function_impl, static_cast<LPVOID>(&function), 0, nullptr))
+	, m_name(_name)
+	, m_handle(CreateThread(nullptr, 0, function_impl, static_cast<LPVOID>(&function), CREATE_SUSPENDED, nullptr))
 {
 	SetThreadPriority(m_handle, _priority);
+
+	auto _wname = std::wstring(m_name.begin(), m_name.end());
+	SetThreadDescription(m_handle, _wname.c_str());
+
+	ResumeThread(m_handle);
 }
