@@ -45,6 +45,7 @@ Scheduler::Scheduler()
 		while (true);
 	}
 
+	m_idle.resume();
 	SetThreadPriority(GetCurrentThread(), SCHEDULER_PRIORITY);	// TODO: Use NativeThread to have run() in a separate thread
 }
 

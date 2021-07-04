@@ -7,11 +7,13 @@ using std::endl;
 void NativeThread::resume()
 {
 	SetThreadPriority(m_handle, THREAD_RUNNING_PRIORITY);
+	ResumeThread(m_handle);
 }
 
 void NativeThread::pause()
 {
 	SetThreadPriority(m_handle, THREAD_PAUSED_PRIORITY);
+	SuspendThread(m_handle);
 }
 
 static DWORD WINAPI function_impl(LPVOID lpParam)
@@ -30,6 +32,4 @@ NativeThread::NativeThread(std::function<void()> _function, int _priority, std::
 
 	auto _wname = std::wstring(m_name.begin(), m_name.end());
 	SetThreadDescription(m_handle, _wname.c_str());
-
-	ResumeThread(m_handle);
 }

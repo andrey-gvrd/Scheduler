@@ -24,6 +24,7 @@ public:
 	virtual void handler() = 0;
 	void sleep_ms(MilliSeconds);
 	void sleep_ticks(Ticks);
+	void yield();
 
 protected:
 	std::string m_name;
@@ -38,6 +39,4 @@ private:
 
 	bool operator<(const Thread& rhs) { return static_cast<int>(m_priority) > static_cast<int>(rhs.m_priority); }
 	bool operator>(const Thread& rhs) { return rhs.m_priority < m_priority; }
-
-	void yield();
 };
